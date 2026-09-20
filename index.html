@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  />
+
+  <title>not a scam</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Patrick+Hand&display=swap');
+
+    :root {
+      --paper: #fffaf3;
+      --ink: #2f2a28;
+      --muted: #776c67;
+      --accent: #d9735b;
+      --accent-soft: #fbe3d9;
+      --yellow: #f6e2a8;
+      --yellow-deep: #ecd08a;
+      --mint: #cfe6d3;
+      --sky: #dcebf7;
+      --line: #eaded6;
+      --white: #ffffff;
+      --shadow: rgba(70, 45, 40, 0.10);
+
+      --hand: "Patrick Hand", "Chalkboard SE", "Bradley Hand", "Comic Sans MS", cursive;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      touch-action: manipulation;
+    }
+
+    :focus-visible {
+      outline: 3px solid rgba(217, 115, 91, 0.45);
+      outline-offset: 3px;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+    }
+
+    /*
+     * Each screen scrolls on its own, so nothing gets cut off on
+     * short phones. The content block centers itself with margin:auto
+     * (which, unlike align-items:center, never clips the top).
+     */
+    .screen {
+      position: absolute;
+      inset: 0;
+
+      display: flex;
+
+      padding: 28px 22px;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      transform: translateY(18px) scale(0.98);
+
+      transition:
+        opacity 0.55s ease,
+        transform 0.65s cubic-bezier(.22, 1, .36, 1),
+        visibility 0.55s;
+    }
+
+    .screen:focus {
+      outline: none;
+    }
+
+    /* screens with a back arrow leave room for it at the top */
+    .screen.has-back {
+      padding-top: 68px;
+    }
+
+    .screen.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+
+      width: min(100%, 440px);
+      margin: auto;
+      text-align: center;
+    }
+
+    /* =========================
+       DOODLES (kept to a minimum)
+    ========================= */
+
+    .doodle {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.75;
+    }
+
+    .doodle-star {
+      color: #d8b76d;
+      font-size: 22px;
+      animation: float 3.5s ease-in-out infinite reverse;
+    }
+
+    .doodle-code {
+      font-family: var(--mono);
+      font-size: 16px;
+      color: #c9b58a;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .top-left {
+      top: 12%;
+      left: 9%;
+    }
+
+    .bottom-left {
+      bottom: 12%;
+      left: 13%;
+    }
+
+    .bottom-right {
+      bottom: 15%;
+      right: 12%;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(-4deg);
+      }
+
+      50% {
+        transform: translateY(-7px) rotate(5deg);
+      }
+    }
+
+    /* =========================
+       ENVELOPE
+    ========================= */
+
+    .envelope-screen {
+      background:
+        radial-gradient(circle at 15% 15%, #fbe3d9 0 2px, transparent 3px),
+        radial-gradient(circle at 85% 80%, #f6e2a8 0 2px, transparent 3px),
+        var(--paper);
+    }
+
+    .envelope-wrap {
+      position: relative;
+      width: min(78vw, 330px);
+      margin: 0 auto 40px;
+      cursor: pointer;
+    }
+
+    .envelope {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.55;
+      filter: drop-shadow(0 18px 20px var(--shadow));
+
+      animation: envelopeFloat 3.5s ease-in-out infinite;
+    }
+
+    @keyframes envelopeFloat {
+      0%, 100% {
+        transform: translateY(0) rotate(-1deg);
+      }
+
+      50% {
+        transform: translateY(-8px) rotate(1deg);
+      }
+    }
+
+    /* back of the envelope */
+    .envelope-back {
+      position: absolute;
+      inset: 0;
+
+      background: var(--yellow-deep);
+      border-radius: 8px;
+    }
+
+    /* front pocket: everything except the V where the flap closes */
+    .envelope-pocket {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+
+      background: #f3dc9c;
+      border-radius: 8px;
+
+      clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+      pointer-events: none;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      z-index: 4;
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 65%;
+
+      background: #f9ebbd;
+
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+
+      transform-origin: top center;
+
+      transition:
+        transform 0.9s cubic-bezier(.22, 1, .36, 1),
+        opacity 0.5s ease,
+        z-index 0s linear 0.4s;
+    }
+
+    /* little sticker instead of a wax heart */
+    .envelope-seal {
+      position: absolute;
+      z-index: 5;
+
+      left: 50%;
+      top: 43%;
+
+      width: 46px;
+      height: 46px;
+
+      display: grid;
+      place-items: center;
+
+      background: #fffdfb;
+      border: 2px dashed #e9b7a8;
+      border-radius: 50%;
+
+      font-size: 22px;
+      line-height: 1;
+
+      box-shadow: 0 3px 8px rgba(70, 45, 40, 0.12);
+
+      transform: translate(-50%, -50%) rotate(-8deg);
+
+      transition:
+        opacity 0.3s ease,
+        transform 0.5s ease;
+    }
+
+    .letter {
+      position: absolute;
+      z-index: 2;
+
+      left: 8%;
+      bottom: 7%;
+
+      width: 84%;
+      height: 78%;
+
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 21px,
+          #f0e6da 21px,
+          #f0e6da 22px
+        ),
+        #fffdfb;
+      background-position: 0 30px;
+      border-radius: 5px;
+
+      box-shadow: 0 5px 15px rgba(50, 35, 30, 0.08);
+
+      transition:
+        transform 1s cubic-bezier(.22, 1, .36, 1),
+        opacity 0.4s ease;
+    }
+
+    .letter::after {
+      content: "hi.";
+
+      position: absolute;
+      left: 14px;
+      top: 8px;
+
+      font-family: var(--hand);
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    .envelope.opening {
+      animation: none;
+    }
+
+    .envelope.opening .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope.opening .letter {
+      transform: translateY(-55%);
+    }
+
+    .envelope.opening .envelope-seal {
+      opacity: 0;
+      transform: translate(-50%, -50%) rotate(-8deg) scale(0.5);
+    }
+
+    .envelope-caption {
+      font-family: var(--hand);
+      font-size: 22px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .fineprint {
+      margin: 14px auto 0;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    /* =========================
+       TYPOGRAPHY
+    ========================= */
+
+    .eyebrow {
+      font-family: var(--hand);
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(34px, 9vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+    }
+
+    h2 {
+      margin: 0 0 20px;
+      font-size: clamp(27px, 7vw, 36px);
+      line-height: 1.1;
+      letter-spacing: -1px;
+    }
+
+    p {
+      margin: 0 auto 18px;
+      max-width: 390px;
+
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .handwritten {
+      font-family: var(--hand);
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .button {
+      border: 0;
+      border-radius: 999px;
+
+      min-height: 52px;
+      padding: 14px 24px;
+
+      background: var(--ink);
+      color: white;
+
+      font-size: 15px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      box-shadow: 0 8px 18px rgba(48, 42, 40, 0.12);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .button:active {
+      transform: scale(0.96);
+      box-shadow: 0 4px 10px rgba(48, 42, 40, 0.10);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+      box-shadow: none;
+      border: 1px solid var(--line);
+    }
+
+    /* small round back arrow (early screens only) */
+    .back-btn {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 2;
+
+      width: 44px;
+      height: 44px;
+      padding: 0;
+
+      display: grid;
+      place-items: center;
+
+      background: white;
+      color: var(--ink);
+
+      border: 1px solid var(--line);
+      border-radius: 50%;
+
+      font-size: 20px;
+      line-height: 1;
+
+      box-shadow: 0 4px 10px rgba(50, 35, 30, 0.06);
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .back-btn:active {
+      transform: scale(0.92);
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    /* =========================
+       ABOUT ME
+    ========================= */
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+
+      margin: 26px 0;
+    }
+
+    .fact {
+      padding: 17px 12px;
+
+      background: white;
+      border: 1px solid #f0e4df;
+      border-radius: 18px;
+
+      box-shadow: 0 7px 18px rgba(50, 35, 30, 0.04);
+
+      transform: translateY(12px);
+      opacity: 0;
+    }
+
+    .screen.active .fact {
+      animation: factIn 0.55s forwards;
+    }
+
+    .screen.active .fact:nth-child(2) {
+      animation-delay: 0.08s;
+    }
+
+    .screen.active .fact:nth-child(3) {
+      animation-delay: 0.16s;
+    }
+
+    .screen.active .fact:nth-child(4) {
+      animation-delay: 0.24s;
+    }
+
+    @keyframes factIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .fact-emoji {
+      font-size: 27px;
+      display: block;
+      margin-bottom: 7px;
+    }
+
+    .fact-text {
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    /* =========================
+       TEXT REVEAL
+    ========================= */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .screen.active .reveal {
+      animation: reveal 0.7s forwards;
+    }
+
+    .screen.active .delay-1 {
+      animation-delay: 0.2s;
+    }
+
+    .screen.active .delay-2 {
+      animation-delay: 0.45s;
+    }
+
+    .screen.active .delay-3 {
+      animation-delay: 0.7s;
+    }
+
+    @keyframes reveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =========================
+       CONFESSION (sticky-note card with a strip of tape)
+    ========================= */
+
+    .confession-card {
+      position: relative;
+
+      padding: 34px 22px 22px;
+
+      background: white;
+      border-radius: 22px;
+
+      border: 1px solid #f0e4df;
+
+      box-shadow: 0 15px 35px rgba(50, 35, 30, 0.06);
+    }
+
+    .confession-card::before {
+      content: "";
+
+      position: absolute;
+      top: -11px;
+      left: 50%;
+
+      width: 84px;
+      height: 24px;
+
+      background: rgba(246, 226, 168, 0.9);
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(70, 45, 40, 0.10);
+
+      transform: translateX(-50%) rotate(-3deg);
+    }
+
+    .confession-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* =========================
+       CHOICES
+    ========================= */
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-top: 22px;
+    }
+
+    .choice {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      gap: 13px;
+
+      padding: 17px 18px;
+
+      border: 1px solid var(--line);
+      border-radius: 17px;
+
+      background: white;
+      color: var(--ink);
+
+      text-align: left;
+      font-size: 15px;
+      line-height: 1.35;
+      min-height: 64px;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .choice:active {
+      transform: scale(0.97);
+    }
+
+    .choice-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .choice:hover {
+      background: #fff8f2;
+      border-color: #e9b7a8;
+    }
+
+    /* ---- the dodging "Nope" button ---- */
+
+    .dodge-msg {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      min-height: 26px;
+      margin: 0;
+      text-align: center;
+
+      font-family: var(--hand);
+      font-size: 21px;
+      line-height: 26px;
+      color: var(--accent);
+
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .dodge-msg.show {
+      opacity: 1;
+    }
+
+    .dodge-msg.pop {
+      animation: msgPop 0.35s ease;
+    }
+
+    @keyframes msgPop {
+      0% {
+        opacity: 0;
+        transform: translateY(5px) scale(0.96);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* the play area the button is allowed to run around in */
+    .dodge-zone {
+      position: relative;
+      height: clamp(150px, 24svh, 200px);
+      margin-top: 11px;   /* same gap as between the other choices */
+    }
+
+    /*
+     * Starts full-width, exactly like the other two choices.
+     * On its first dodge it shrinks to a compact size (--run-w)
+     * so it has room to run around.
+     */
+    .no-slot {
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      width: 100%;
+
+      transform: translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, 0deg));
+      transition:
+        transform 0.35s cubic-bezier(.22, 1, .36, 1),
+        width 0.35s cubic-bezier(.22, 1, .36, 1);
+      will-change: transform;
+    }
+
+    .no-slot.is-running {
+      width: var(--run-w, 152px);
+    }
+
+    .no-slot.is-running .choice-no {
+      justify-content: center;
+      padding: 15px 16px;
+    }
+
+    .choice-no {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .choice-no.wiggle {
+      animation: wiggle 0.45s ease;
+    }
+
+    .choice-no.settled {
+      border-color: #e9b7a8;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0); }
+      25%      { transform: rotate(-7deg); }
+      50%      { transform: rotate(6deg); }
+      75%      { transform: rotate(-3deg); }
+    }
+
+    /* =========================
+       GIF REACTION
+    ========================= */
+
+    .reaction-screen {
+      background: var(--paper);
+    }
+
+    .gif-wrap {
+      width: min(70vw, 300px);
+      margin: 0 auto 26px;
+
+      border-radius: 20px;
+      overflow: hidden;
+
+      box-shadow: 0 15px 30px rgba(50, 35, 30, 0.10);
+
+      animation: gifPop 0.7s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .gif-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @keyframes gifPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.75) rotate(-3deg);
+      }
+
+      70% {
+        transform: scale(1.04) rotate(1deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+      }
+    }
+
+    /* =========================
+       STATUS CHIP (maybe screen)
+    ========================= */
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+
+      margin: 4px 0 26px;
+      padding: 9px 15px;
+
+      background: var(--sky);
+      border-radius: 999px;
+
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e8b54a;
+
+      animation: blink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.35; }
+    }
+
+    /* =========================
+       CONTACT FORM
+    ========================= */
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+
+      margin-top: 22px;
+      text-align: left;
+    }
+
+    .field label {
+      display: block;
+      margin: 0 0 6px 4px;
+
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .opt {
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field textarea {
+      display: block;
+      width: 100%;
+
+      padding: 14px 16px;
+
+      background: white;
+      color: var(--ink);
+
+      border: 1px solid var(--line);
+      border-radius: 16px;
+
+      /* 16px stops iOS from zooming in when the field is focused */
+      font-size: 16px;
+      line-height: 1.4;
+
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .field textarea {
+      min-height: 96px;
+      max-height: 200px;
+      resize: vertical;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #b0a49e;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(217, 115, 91, 0.18);
+    }
+
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .form-actions .button {
+      width: 100%;
+    }
+
+
+    .form-status {
+      min-height: 22px;
+      margin: 0;
+
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .form-status.error {
+      color: #b5452f;
+    }
+
+    .form-status.warn {
+      color: var(--accent);
+    }
+
+    .sent-state {
+      margin-top: 22px;
+      padding: 22px 18px 6px;
+
+      background: white;
+      border: 1px solid #f0e4df;
+      border-radius: 22px;
+    }
+
+    .sent-emoji {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 34px;
+    }
+
+    .sent-state h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+    }
+
+    .sent-state[hidden],
+    .form[hidden] {
+      display: none;
+    }
+
+    /* =========================
+       SOCIAL
+    ========================= */
+
+    .social-title {
+      margin: 30px auto 0;
+
+      font-family: var(--hand);
+      font-size: 20px;
+      line-height: 1.2;
+      color: var(--muted);
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+
+      min-height: 48px;
+      padding: 11px 20px;
+
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+
+      color: var(--ink);
+      text-decoration: none;
+
+      font-size: 14px;
+
+      transition: transform 0.2s ease;
+    }
+
+    .social-link:active {
+      transform: scale(0.95);
+    }
+
+    /* =========================
+       SPARKLE TRANSITION
+    ========================= */
+
+    .sparkles {
+      position: fixed;
+      inset: 0;
+
+      pointer-events: none;
+      z-index: 100;
+
+      opacity: 0;
+    }
+
+    .sparkles.show {
+      opacity: 1;
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 20px;
+      color: #d8b76d;
+
+      animation: sparkle 1s ease forwards;
+    }
+
+    @keyframes sparkle {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.5);
+      }
+
+      40% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-45px) scale(1.1);
+      }
+    }
+
+    /* =========================
+       DESKTOP
+    ========================= */
+
+    @media (min-width: 700px) {
+      .screen {
+        padding: 40px;
+      }
+
+      .content {
+        max-width: 520px;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 11px 22px rgba(48, 42, 40, 0.15);
+      }
+
+      .button.secondary:hover {
+        box-shadow: none;
+      }
+
+      .back-btn:hover {
+        transform: translateX(-2px);
+      }
+
+      .choice:hover {
+        transform: translateY(-2px);
+      }
+
+      .dodge-zone {
+        height: 200px;
+      }
+    }
+
+    /* =========================
+       REDUCED MOTION
+    ========================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- ==========================================
+         SCREEN 1 — ENVELOPE
+    =========================================== -->
+
+    <section class="screen envelope-screen active" id="screen-envelope" tabindex="-1">
+
+      <span class="doodle doodle-code top-left">&lt;/&gt;</span>
+      <span class="doodle doodle-star bottom-right">✦</span>
+
+      <div class="content">
+
+        <div class="envelope-wrap" id="envelopeWrap">
+
+          <div class="envelope" id="envelope">
+
+            <div class="envelope-back"></div>
+
+            <div class="letter"></div>
+
+            <div class="envelope-pocket"></div>
+
+            <div class="envelope-flap"></div>
+
+            <div class="envelope-seal">👀</div>
+
+          </div>
+
+        </div>
+
+        <div class="envelope-caption">
+          hey, you.
+        </div>
+
+        <p>
+          I made you a tiny website. Yes, really.
+        </p>
+
+        <button class="button" id="openEnvelope">
+          open it →
+        </button>
+
+        <p class="fineprint">
+          (hindi 'to scam, promise.)
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 2 — INTRO
+    =========================================== -->
+
+    <section class="screen has-back" id="screen-intro" tabindex="-1">
+
+      <span class="doodle doodle-star bottom-left">✦</span>
+
+      <button
+        class="back-btn"
+        type="button"
+        aria-label="Go back"
+        onclick="goBack('screen-envelope')"
+      >←</button>
+
+
+      <div class="content">
+
+        <div class="eyebrow reveal">
+          okay...
+        </div>
+
+        <h1 class="reveal delay-1">
+          Hi, I'm Paul.
+        </h1>
+
+        <p class="reveal delay-2">
+          I'm 27.
+        </p>
+
+        <p class="reveal delay-2">
+          And before anything else,
+          I should probably introduce myself.
+        </p>
+
+        <p class="reveal delay-3">
+          Because... you probably don't even know
+          who made this thing. 😅
+        </p>
+
+        <div class="button-row reveal delay-3">
+          <button class="button" onclick="goTo('screen-about')">
+            okay, tell me more →
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 3 — ABOUT ME
+    =========================================== -->
+
+    <section class="screen has-back" id="screen-about" tabindex="-1">
+
+      <button
+        class="back-btn"
+        type="button"
+        aria-label="Go back"
+        onclick="goBack('screen-intro')"
+      >←</button>
+
+      <div class="content">
+
+        <div class="eyebrow reveal">
+          a little about me
+        </div>
+
+        <h2 class="reveal delay-1">
+          Since we're starting<br>
+          from zero...
+        </h2>
+
+        <p class="reveal delay-2">
+          Here's the README version.
+          Don't worry, this won't turn into a résumé.
+        </p>
+
+        <div class="facts">
+
+          <div class="fact">
+            <span class="fact-emoji">💻</span>
+            <div class="fact-text">
+              I make websites for a living. Yes, this one too.
+            </div>
+          </div>
+
+          <div class="fact">
+            <span class="fact-emoji">☕</span>
+            <div class="fact-text">
+              Coffee is probably involved somewhere.
+            </div>
+          </div>
+
+          <div class="fact">
+            <span class="fact-emoji">🎧</span>
+            <div class="fact-text">
+              Music is always playing. Always.
+            </div>
+          </div>
+
+          <div class="fact">
+            <span class="fact-emoji">♟️</span>
+            <div class="fact-text">
+              I love games and chess. Fair warning: I'm competitive.
+            </div>
+          </div>
+
+        </div>
+
+        <p class="reveal delay-3">
+          That's enough about me for now. 😅
+        </p>
+
+        <button
+          class="button reveal delay-3"
+          onclick="goTo('screen-reason')"
+        >
+          continue →
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 4 — THE REASON
+    =========================================== -->
+
+    <section class="screen has-back" id="screen-reason" tabindex="-1">
+
+      <button
+        class="back-btn"
+        type="button"
+        aria-label="Go back"
+        onclick="goBack('screen-about')"
+      >←</button>
+
+      <div class="content">
+
+        <div class="eyebrow reveal">
+          okay...
+        </div>
+
+        <h1 class="reveal delay-1">
+          enough about me.
+        </h1>
+
+        <p class="reveal delay-2">
+          There's actually a reason
+          I made this.
+        </p>
+
+        <div style="height: 15px;"></div>
+
+        <p class="handwritten reveal delay-3"
+           style="font-size: 27px; color: var(--ink);">
+          I've been wanting to tell you something...
+        </p>
+
+        <button
+          class="button reveal delay-3"
+          onclick="goTo('screen-confession')"
+          style="margin-top: 25px;"
+        >
+          what is it? →
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 5 — CONFESSION
+    =========================================== -->
+
+    <section class="screen has-back" id="screen-confession" tabindex="-1">
+
+      <button
+        class="back-btn"
+        type="button"
+        aria-label="Go back"
+        onclick="goBack('screen-reason')"
+      >←</button>
+
+      <div class="content">
+
+        <div class="confession-card">
+
+          <div class="eyebrow reveal">
+            so...
+          </div>
+
+          <h2 class="reveal delay-1">
+            Okay... hear me out. 😅
+          </h2>
+
+          <p class="reveal delay-2">
+            I don't really know you that well yet,
+            and honestly, that's kinda the point.
+          </p>
+
+          <p class="reveal delay-2">
+            You caught my attention somehow,
+            and I got curious. I'd like to get to know you.
+          </p>
+
+          <p
+            class="handwritten reveal delay-3"
+            style="font-size: 28px; color: var(--ink); margin-bottom: 10px;"
+          >
+            That's basically it. 😂
+          </p>
+
+        </div>
+
+        <button
+          class="button reveal delay-3"
+          onclick="goTo('screen-question')"
+          style="margin-top: 25px;"
+        >
+          keep going →
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 6 — QUESTION
+    =========================================== -->
+
+    <section class="screen" id="screen-question" tabindex="-1">
+
+      <div class="content">
+
+        <div class="eyebrow reveal">
+          and yeah... that's it.
+        </div>
+
+        <h2 class="reveal delay-1">
+          So... what do you think?
+        </h2>
+
+        <p class="reveal delay-2" style="margin-bottom: 0;">
+          I just thought I'd shoot my shot
+          and see what happens. 😅 No pressure, promise.
+        </p>
+
+        <div class="choices reveal delay-3">
+
+          <button
+            class="choice"
+            onclick="choose('yes')"
+          >
+            <span class="choice-icon">😌</span>
+
+            <span>
+              Sure, let's get to know each other
+            </span>
+          </button>
+
+          <button
+            class="choice"
+            onclick="choose('maybe')"
+          >
+            <span class="choice-icon">👀</span>
+
+            <span>
+              Maybe… let me think about it
+            </span>
+          </button>
+
+        </div>
+
+        <!-- The "Nope" button can only run around inside this box -->
+        <div class="dodge-zone reveal delay-3" id="dodgeZone">
+
+          <div class="no-slot" id="noSlot">
+
+            <button class="choice choice-no" id="noBtn" type="button">
+              <span class="choice-icon" id="noIcon">😭</span>
+
+              <span>
+                Nope
+              </span>
+            </button>
+
+          </div>
+
+          <!-- Tiny message that changes each time "Nope" runs away -->
+          <div
+            class="dodge-msg"
+            id="dodgeMsg"
+            role="status"
+            aria-live="polite"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 7 — LEGO BATMAN REACTION  (YES)
+    =========================================== -->
+
+    <section class="screen reaction-screen" id="screen-reaction" tabindex="-1">
+
+      <div class="content">
+
+        <!-- TODO (optional): change this path if your GIF lives somewhere else. -->
+        <div class="gif-wrap">
+
+          <img
+            src="./assets/stunned-wow.gif"
+            alt="Lego Batman reaction"
+            onerror="this.parentElement.style.display='none'"
+          />
+
+        </div>
+
+        <div class="eyebrow reveal">
+          okay, cool.
+        </div>
+
+        <h2 class="reveal delay-1">
+          WAIT... SERIOUSLY? 😂
+        </h2>
+
+        <p class="reveal delay-2">
+          Okay, nice. So it actually worked.
+        </p>
+
+        <p class="reveal delay-2">
+          I'm going to act calm about it.
+          (I am not calm.)
+        </p>
+
+        <p class="reveal delay-2">
+          So... I guess we should actually talk sometime?
+        </p>
+
+        <button
+          class="button reveal delay-3"
+          onclick="goTo('screen-contact')"
+        >
+          sige, let's talk →
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 8 — MAYBE
+    =========================================== -->
+
+    <section class="screen" id="screen-maybe" tabindex="-1">
+
+      <div class="content">
+
+        <div class="eyebrow">
+          noted. 👀
+        </div>
+
+        <h2>
+          Maybe? Valid answer. 😌
+        </h2>
+
+        <p>
+          No rush at all. Take as long as you need.
+        </p>
+
+        <p>
+          I'll be over here, pretending to be busy.
+        </p>
+
+        <div class="status-chip">
+          <span class="status-dot"></span>
+          status: pending · deadline: none
+        </div>
+
+        <div>
+          <button
+            class="button secondary"
+            onclick="goTo('screen-contact')"
+          >
+            leave a note (optional)
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 9 — NO
+    =========================================== -->
+
+    <section class="screen" id="screen-no" tabindex="-1">
+
+      <div class="content">
+
+        <div class="eyebrow">
+          got it. no worries. 🤝
+        </div>
+
+        <h2>
+          Thanks for being honest.
+        </h2>
+
+        <p>
+          You literally had to chase that button
+          down just to say no. Respect. 😂
+        </p>
+
+        <p>
+          We're good. No follow-ups, no weirdness.
+        </p>
+
+        <p class="handwritten"
+           style="font-size: 27px; color: var(--ink);">
+          Take care! :)
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         SCREEN 10 — CONTACT / OPTIONAL NOTE
+         (reached from YES, and optionally from MAYBE)
+    =========================================== -->
+
+    <section class="screen" id="screen-contact" tabindex="-1">
+
+      <div class="content">
+
+        <div class="eyebrow">
+          one last thing
+        </div>
+
+        <h2>
+          Wanna leave a note?
+        </h2>
+
+        <p>
+          Drop a message, a way to reach you,
+          or both.
+        </p>
+
+        <form class="form" id="responseForm" novalidate>
+
+          <div class="field">
+            <label for="fieldMessage">
+              Message <span class="opt">(optional)</span>
+            </label>
+
+            <textarea
+              id="fieldMessage"
+              name="message"
+              rows="3"
+              maxlength="600"
+              placeholder="kahit 'hi' lang okay na 😌"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="fieldContact">
+              How can I reach you? <span class="opt">(optional)</span>
+            </label>
+
+            <input
+              id="fieldContact"
+              name="contact"
+              type="text"
+              maxlength="120"
+              autocomplete="off"
+              enterkeyhint="send"
+              placeholder="Messenger, IG, number, etc."
+            />
+          </div>
+
+          <!-- Honeypot (Web3Forms spam protection). Leave hidden. -->
+          <input
+            type="checkbox"
+            name="botcheck"
+            tabindex="-1"
+            autocomplete="off"
+            style="display: none;"
+          />
+
+          <div class="form-actions">
+
+            <button class="button" type="submit" id="sendBtn">
+              send it →
+            </button>
+
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+
+          </div>
+
+        </form>
+
+        <div class="sent-state" id="sentState" hidden>
+          <span class="sent-emoji" id="sentEmoji">📬</span>
+          <h3 id="sentTitle">Sent!</h3>
+          <p id="sentText"></p>
+        </div>
+
+        <div class="social-title">
+          or find me here:
+        </div>
+
+        <div class="social-links">
+
+          <!-- TODO: REPLACE THESE LINKS -->
+
+          <a
+            class="social-link"
+            href="https://m.me/paulandreycabrera"
+            target="_blank"
+            rel="noopener"
+          >
+            Messenger →
+          </a>
+
+          <a
+            class="social-link"
+            href="https://facebook.com/paulandreycabrera"
+            target="_blank"
+            rel="noopener"
+          >
+            Facebook →
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SPARKLES -->
+
+    <div class="sparkles" id="sparkles"></div>
+
+  </main>
+
+
+  <script>
+
+    /*
+     * ==========================================
+     * CONFIG  —  the only part you need to edit
+     * ==========================================
+     */
+
+    const CONFIG = {
+
+      // TODO: PASTE YOUR WEB3FORMS ACCESS KEY HERE
+      // (create one at https://web3forms.com — it's emailed to you)
+      WEB3FORMS_ACCESS_KEY: "8707749c-41e3-4159-a730-e1a20fa455c9",
+
+      WEB3FORMS_ENDPOINT: "https://api.web3forms.com/submit",
+
+      // Sent with every submission so you can tell it came from this site.
+      SITE_ID: "confession-site",
+
+      // Sender name shown on the notification email.
+      SENDER_NAME: "Site Response",
+
+      // How many times "Nope" runs away before it lets itself be clicked.
+      DODGES_BEFORE_GIVING_UP: 5
+    };
+
+
+    /*
+     * ==========================================
+     * SCREEN NAVIGATION
+     * ==========================================
+     */
+
+    let navLock = false;
+
+    function goTo(screenId, options = {}) {
+
+      const current = document.querySelector(".screen.active");
+      const next = document.getElementById(screenId);
+
+      if (!next || !current || current === next || navLock) return;
+
+      /*
+       * Ignore extra taps for a moment so a double-tap
+       * can't skip straight past the next screen.
+       */
+
+      navLock = true;
+
+      setTimeout(() => {
+        navLock = false;
+      }, 650);
+
+      if (options.sparkle) createSparkles();
+
+      current.classList.remove("active");
+
+      setTimeout(() => {
+        next.scrollTop = 0;
+        next.classList.add("active");
+        next.focus({ preventScroll: true });
+      }, 100);
+    }
+
+
+    /*
+     * ==========================================
+     * ENVELOPE ANIMATION
+     * ==========================================
+     */
+
+    const envelope = document.getElementById("envelope");
+    const openEnvelope = document.getElementById("openEnvelope");
+    const envelopeWrap = document.getElementById("envelopeWrap");
+
+    let envelopeOpened = false;
+
+    function openTheEnvelope() {
+
+      if (envelopeOpened) return;
+      envelopeOpened = true;
+
+      envelope.classList.add("opening");
+
+      createSparkles();
+
+      /*
+       * Give the envelope animation time to finish
+       * before moving to the next screen.
+       */
+
+      setTimeout(() => {
+        goTo("screen-intro");
+      }, 1100);
+
+    }
+
+    /*
+     * Back arrow (intro -> confession screens only).
+     * Going back to the envelope closes it again so it can be re-opened.
+     */
+
+    function goBack(screenId) {
+
+      if (screenId === "screen-envelope") {
+        envelope.classList.remove("opening");
+        envelopeOpened = false;
+      }
+
+      goTo(screenId);
+    }
+
+    openEnvelope.addEventListener("click", openTheEnvelope);
+    envelopeWrap.addEventListener("click", openTheEnvelope);
+
+
+    /*
+     * ==========================================
+     * WEB3FORMS
+     * ==========================================
+     *
+     * Every submission includes:
+     *   selected_choice  -> "Yes" | "Maybe" | "No"
+     *   submission_type  -> "choice" (sent the moment they pick)
+     *                       "follow-up" (optional note from the form)
+     *   source           -> CONFIG.SITE_ID
+     *   timestamp        -> ISO 8601, UTC
+     *   message / contact -> only when they typed something
+     */
+
+    const CHOICE_LABELS = {
+      yes: "Yes",
+      maybe: "Maybe",
+      no: "No"
+    };
+
+    function buildPayload({ type, choice, message = "", contact = "" }) {
+
+      const payload = {
+        access_key: CONFIG.WEB3FORMS_ACCESS_KEY,
+        subject: type === "choice"
+          ? `Website response: ${choice}`
+          : `Website follow-up (${choice})`,
+        from_name: CONFIG.SENDER_NAME,
+
+        source: CONFIG.SITE_ID,
+        submission_type: type,
+        selected_choice: choice,
+        timestamp: new Date().toISOString()
+      };
+
+      if (message) payload.message = message;
+      if (contact) payload.contact = contact;
+
+      return payload;
+    }
+
+    /*
+     * One attempt. Resolves to { ok, retryable }.
+     * (retryable = worth trying again, e.g. network hiccup)
+     */
+
+    async function sendToWeb3Forms(payload) {
+
+      if (
+        !CONFIG.WEB3FORMS_ACCESS_KEY ||
+        CONFIG.WEB3FORMS_ACCESS_KEY.startsWith("YOUR_")
+      ) {
+        console.warn(
+          "[Web3Forms] Access key not set. Nothing was sent. " +
+          "Put your key in CONFIG.WEB3FORMS_ACCESS_KEY."
+        );
+        return { ok: false, retryable: false };
+      }
+
+      const body = new FormData();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        body.append(key, value);
+      });
+
+      try {
+
+        const response = await fetch(CONFIG.WEB3FORMS_ENDPOINT, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.success) {
+          return { ok: true, retryable: false };
+        }
+
+        console.warn("[Web3Forms] Not accepted:", response.status, data.message);
+
+        return {
+          ok: false,
+          retryable: response.status >= 500 || response.status === 429
+        };
+
+      } catch (error) {
+
+        console.warn("[Web3Forms] Network error:", error);
+
+        return { ok: false, retryable: true };
+
+      }
+    }
+
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    /*
+     * Used for the silent "they just picked X" submission:
+     * tries up to 3 times so a flaky mobile connection
+     * doesn't lose the answer.
+     */
+
+    async function sendWithRetry(payload, attempts = 3) {
+
+      for (let i = 0; i < attempts; i++) {
+
+        const result = await sendToWeb3Forms(payload);
+
+        if (result.ok || !result.retryable) return result;
+
+        await wait(1500 * (i + 1));
+
+      }
+
+      return { ok: false, retryable: false };
+    }
+
+
+    /*
+     * ==========================================
+     * CHOICE HANDLING
+     * ==========================================
+     *
+     * The choice is sent the moment it's picked, so it's
+     * recorded even if they never touch the optional form.
+     */
+
+    let chosen = null;
+
+    function choose(choice) {
+
+      if (chosen) return;
+      chosen = choice;
+
+      sendWithRetry(
+        buildPayload({
+          type: "choice",
+          choice: CHOICE_LABELS[choice]
+        })
+      );
+
+      if (choice === "yes") {
+
+        /*
+         * Show Lego Batman first.
+         */
+
+        goTo("screen-reaction", { sparkle: true });
+
+      }
+
+      else if (choice === "maybe") {
+
+        goTo("screen-maybe");
+
+      }
+
+      else if (choice === "no") {
+
+        goTo("screen-no");
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================
+     * THE DODGING "NOPE" BUTTON
+     * ==========================================
+     *
+     * - Desktop: it hops away when the mouse touches it.
+     * - Phone:   it hops away when a finger lands on it.
+     * - Keyboard: pressing Enter/Space on it counts as an attempt too.
+     * - It only ever lands inside #dodgeZone AND inside the visible screen.
+     * - After CONFIG.DODGES_BEFORE_GIVING_UP hops it stops running,
+     *   and the next click goes through as "No".
+     */
+
+    const noBtn = document.getElementById("noBtn");
+    const noSlot = document.getElementById("noSlot");
+    const noIcon = document.getElementById("noIcon");
+    const dodgeZone = document.getElementById("dodgeZone");
+    const dodgeMsg = document.getElementById("dodgeMsg");
+
+    const DODGE_MESSAGES = [
+      "uy wait 😭",
+      "sure ka?",
+      "try again 😂",
+      "grabe naman",
+      "last chance 👀"
+    ];
+
+    const DODGE_ICONS = ["😳", "🙈", "😂", "🫠", "👀"];
+
+    const DODGE_COOLDOWN_MS = 450;
+    const SCREEN_EDGE_GAP = 10;
+
+    // Width of the button once it starts running (starts full-width).
+    const RUN_W = 152;
+
+    // Bottom strip of the zone reserved for the little message.
+    const MSG_SPACE = 32;
+
+    noSlot.style.setProperty("--run-w", `${RUN_W}px`);
+
+    let dodgeCount = 0;
+    let lastDodgeAt = -Infinity;
+
+    let noPos = { x: 0, y: 0 };
+    let recentSpots = [];
+
+    const rand = (min, max) => min + Math.random() * (max - min);
+
+    function placeNo(x, y, rotation = 0) {
+      noPos = { x, y };
+      noSlot.style.setProperty("--x", `${Math.round(x)}px`);
+      noSlot.style.setProperty("--y", `${Math.round(y)}px`);
+      noSlot.style.setProperty("--r", `${rotation}deg`);
+    }
+
+    /*
+     * The area the button may land in: inside the zone,
+     * and also inside what's actually visible on screen.
+     */
+
+    function getNoBounds() {
+
+      const zone = dodgeZone.getBoundingClientRect();
+
+      const zoneW = dodgeZone.clientWidth;
+      const zoneH = dodgeZone.clientHeight;
+
+      const w = RUN_W;
+      const h = noSlot.offsetHeight;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      let minX = Math.max(0, SCREEN_EDGE_GAP - zone.left);
+      let maxX = Math.min(zoneW - w, vw - SCREEN_EDGE_GAP - zone.left - w);
+
+      let minY = Math.max(0, SCREEN_EDGE_GAP - zone.top);
+      // On short phones the bottom of the zone can sit below the screen edge,
+      // so only the part that's actually visible counts.
+      const visibleH = Math.min(zoneH, vh - SCREEN_EDGE_GAP - zone.top);
+
+      let maxY = visibleH - h - MSG_SPACE;
+
+      // Zone partly off-screen on a tiny device? Fall back to the zone itself.
+      if (maxX < minX) { minX = 0; maxX = Math.max(0, zoneW - w); }
+      if (maxY < minY) { minY = 0; maxY = Math.max(0, zoneH - h - MSG_SPACE); }
+
+      return { minX, maxX, minY, maxY, w, h, zone };
+    }
+
+    function distanceToRect(px, py, x, y, w, h) {
+      const dx = Math.max(x - px, 0, px - (x + w));
+      const dy = Math.max(y - py, 0, py - (y + h));
+      return Math.hypot(dx, dy);
+    }
+
+    function moveNoButton(evt) {
+
+      const b = getNoBounds();
+
+      // Where the pointer is, relative to the zone (if we know).
+      // (A keyboard-triggered click has no real coordinates, so skip it.)
+      const hasPointer =
+        evt &&
+        typeof evt.clientX === "number" &&
+        !(evt.type === "click" && evt.detail === 0);
+
+      const pointer = hasPointer
+        ? { x: evt.clientX - b.zone.left, y: evt.clientY - b.zone.top }
+        : null;
+
+      let best = { x: noPos.x, y: noPos.y, score: -1 };
+
+      for (let i = 0; i < 40; i++) {
+
+        const x = rand(b.minX, b.maxX);
+        const y = rand(b.minY, b.maxY);
+
+        // far from where it is now...
+        let score = Math.hypot(x - noPos.x, y - noPos.y);
+
+        // ...far from where it just was (so every hop is a new spot)...
+        recentSpots.forEach((spot) => {
+          score = Math.min(score, Math.hypot(x - spot.x, y - spot.y) * 1.2);
+        });
+
+        // ...and not right under the finger / cursor.
+        if (pointer) {
+          score = Math.min(
+            score,
+            distanceToRect(pointer.x, pointer.y, x, y, b.w, b.h) + 40
+          );
+        }
+
+        if (score > best.score) best = { x, y, score };
+
+      }
+
+      recentSpots.push({ ...noPos });
+      if (recentSpots.length > 2) recentSpots.shift();
+
+      placeNo(best.x, best.y, Math.round(rand(-6, 6)));
+    }
+
+    function showDodgeMessage(text) {
+
+      // Keep the message on-screen too, even if the zone runs past the fold.
+      const zone = dodgeZone.getBoundingClientRect();
+      const zoneH = dodgeZone.clientHeight;
+      const visibleH = Math.min(zoneH, window.innerHeight - SCREEN_EDGE_GAP - zone.top);
+
+      dodgeMsg.style.bottom =
+        `${Math.min(Math.max(0, zoneH - visibleH), zoneH - MSG_SPACE)}px`;
+
+      dodgeMsg.textContent = text;
+      dodgeMsg.classList.remove("pop");
+      void dodgeMsg.offsetWidth;           // restart the tiny pop animation
+      dodgeMsg.classList.add("show", "pop");
+    }
+
+    function wiggleNo() {
+      noBtn.classList.remove("wiggle");
+      void noBtn.offsetWidth;
+      noBtn.classList.add("wiggle");
+    }
+
+    /*
+     * Returns true if this attempt was "swallowed"
+     * (the button dodged, or a dodge just happened),
+     * false if the click should go through as a real "No".
+     */
+
+    function handleNoAttempt(evt) {
+
+      // A dodge just happened: ignore stray events from the same tap,
+      // so one tap never counts twice and never accidentally selects No.
+      if (performance.now() - lastDodgeAt < DODGE_COOLDOWN_MS) return true;
+
+      // Out of dodges: let it through.
+      if (dodgeCount >= CONFIG.DODGES_BEFORE_GIVING_UP) return false;
+
+      lastDodgeAt = performance.now();
+      dodgeCount++;
+
+      noSlot.classList.add("is-running");   // shrink from full-width to compact
+      moveNoButton(evt);
+      wiggleNo();
+
+      const i = Math.min(dodgeCount - 1, DODGE_MESSAGES.length - 1);
+      showDodgeMessage(DODGE_MESSAGES[i]);
+      noIcon.textContent = DODGE_ICONS[Math.min(dodgeCount - 1, DODGE_ICONS.length - 1)];
+
+      if (dodgeCount >= CONFIG.DODGES_BEFORE_GIVING_UP) {
+        noBtn.classList.add("settled");
+      }
+
+      return true;
+    }
+
+    // Mouse: jump away as soon as the cursor touches it.
+    noBtn.addEventListener("pointerenter", (e) => {
+      if (e.pointerType === "mouse") handleNoAttempt(e);
+    });
+
+    // Touch / pen (and mouse as a backup): jump away when pressed.
+    noBtn.addEventListener("pointerdown", (e) => {
+      if (handleNoAttempt(e)) e.preventDefault();
+    });
+
+    // Click (also covers keyboard): dodge, or finally accept the No.
+    noBtn.addEventListener("click", (e) => {
+
+      if (handleNoAttempt(e)) {
+        e.preventDefault();
+        return;
+      }
+
+      choose("no");
+
+    });
+
+    // Start as a normal full-width choice, and keep it inside on resize / rotate.
+    function resetNoPosition() {
+
+      if (dodgeCount === 0) {
+        placeNo(0, 0, 0);
+        return;
+      }
+
+      const zoneW = dodgeZone.clientWidth;
+      const zoneH = dodgeZone.clientHeight;
+      const h = noSlot.offsetHeight;
+
+      placeNo(
+        Math.min(Math.max(0, noPos.x), Math.max(0, zoneW - RUN_W)),
+        Math.min(Math.max(0, noPos.y), Math.max(0, zoneH - h - MSG_SPACE)),
+        0
+      );
+    }
+
+    resetNoPosition();
+    window.addEventListener("resize", resetNoPosition);
+
+
+    /*
+     * ==========================================
+     * OPTIONAL NOTE FORM  (Yes / Maybe follow-up)
+     * ==========================================
+     */
+
+    const responseForm = document.getElementById("responseForm");
+    const sendBtn = document.getElementById("sendBtn");
+    const formStatus = document.getElementById("formStatus");
+    const sentState = document.getElementById("sentState");
+    const sentEmoji = document.getElementById("sentEmoji");
+    const sentTitle = document.getElementById("sentTitle");
+    const sentText = document.getElementById("sentText");
+
+    let sendingNote = false;
+
+    function setFormStatus(text = "", kind = "") {
+      formStatus.textContent = text;
+      formStatus.className = `form-status ${kind}`.trim();
+    }
+
+    function showFormDone({ emoji, title, text }) {
+      sentEmoji.textContent = emoji;
+      sentTitle.textContent = title;
+      sentText.textContent = text;
+
+      responseForm.hidden = true;
+      sentState.hidden = false;
+    }
+
+    responseForm.addEventListener("submit", async (e) => {
+
+      e.preventDefault();
+
+      if (sendingNote) return;
+
+      // Honeypot: real people never tick this hidden box.
+      if (responseForm.elements["botcheck"].checked) return;
+
+      const message = responseForm.elements["message"].value.trim();
+      const contact = responseForm.elements["contact"].value.trim();
+
+      if (!message && !contact) {
+        setFormStatus("type something first 😅", "warn");
+        return;
+      }
+
+      sendingNote = true;
+      sendBtn.disabled = true;
+      sendBtn.textContent = "sending…";
+      setFormStatus("");
+
+      const result = await sendToWeb3Forms(
+        buildPayload({
+          type: "follow-up",
+          choice: CHOICE_LABELS[chosen] || "Unknown",
+          message,
+          contact
+        })
+      );
+
+      sendingNote = false;
+
+      if (result.ok) {
+
+        showFormDone({
+          emoji: "📬",
+          title: "Sent!",
+          text: "I'll try to act normal when I read it. 😅"
+        });
+
+      } else {
+
+        sendBtn.disabled = false;
+        sendBtn.textContent = "send it →";
+
+        setFormStatus(
+          "di na-send 😭 baka connection. try again?",
+          "error"
+        );
+
+      }
+
+    });
+
+    // Clear the "type something first" nudge as soon as they start typing.
+    responseForm.addEventListener("input", () => {
+      if (formStatus.classList.contains("warn")) setFormStatus();
+    });
+
+    /*
+     * ==========================================
+     * LITTLE SPARKLES  (only for the big moments)
+     * ==========================================
+     */
+
+    function createSparkles() {
+
+      const container =
+        document.getElementById("sparkles");
+
+      container.innerHTML = "";
+
+      const symbols = ["✦", "✧", "·"];
+
+      for (let i = 0; i < 7; i++) {
+
+        const sparkle =
+          document.createElement("span");
+
+        sparkle.className = "sparkle";
+
+        sparkle.textContent =
+          symbols[Math.floor(Math.random() * symbols.length)];
+
+        sparkle.style.left =
+          `${30 + Math.random() * 40}%`;
+
+        sparkle.style.top =
+          `${35 + Math.random() * 30}%`;
+
+        sparkle.style.animationDelay =
+          `${Math.random() * 0.25}s`;
+
+        container.appendChild(sparkle);
+      }
+
+      container.classList.add("show");
+
+      setTimeout(() => {
+        container.classList.remove("show");
+      }, 1100);
+
+    }
+
+  </script>
+
+</body>
+</html>
